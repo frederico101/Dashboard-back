@@ -21,5 +21,7 @@ Route::prefix('users')->group(function () {
         Route::put('/{id}', [HelloController::class, 'update']);
         Route::delete('/{id}', [HelloController::class, 'destroy']);
         Route::post('/logout', [HelloController::class, 'logout']);
+        Route::post('/protected', [HelloController::class, 'protected']);
+
     });
 });

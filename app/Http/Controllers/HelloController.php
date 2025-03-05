@@ -69,6 +69,16 @@ class HelloController extends Controller
         ], 200);
     }
 
+    public function protected(Request $request)
+    {
+        try {
+            $user = $request->user();
+            return response()->json(['user' => $user]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Token is invalid or expired'], 401);
+        }
+    }
+
     public function register(Request $request)
     {
         // Validate input
