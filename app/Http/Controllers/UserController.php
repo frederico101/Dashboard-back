@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class HelloController extends Controller
+class UserController extends Controller
 {
     public function sayHello()
     {
@@ -112,11 +112,26 @@ class HelloController extends Controller
         ], 200);
     }
 
+    // public function protected(Request $request)
+    // {
+    //     try {
+    //         $user = $request->user();
+    //         return response()->json(['user' => $user]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Token is invalid or expired'], 401);
+    //     }
+    // }
+
     public function protected(Request $request)
     {
         try {
-            $user = $request->user();
-            return response()->json(['user' => $user]);
+            $user = $request->user(); // Get authenticated user
+
+            // Return both user data and role
+            return response()->json([
+                'user' => $user, // Return the user data
+                'role' => $user->role // Explicitly return the role field
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Token is invalid or expired'], 401);
         }
@@ -139,11 +154,16 @@ class HelloController extends Controller
             ], 422);
         }
 
-        // Create user
+        // Determine the role based on the email
+        $email = $request->email;
+        $role = (strpos($email, 'admin') !== false) ? 'admin' : 'user'; // Check if "admin" exists in the email
+
+        // Create user with assigned role
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'email' => $email,
+            'password' => Hash::make($request->password),
+            'role' => $role // Assign role here
         ]);
 
         // Generate token
@@ -153,9 +173,46 @@ class HelloController extends Controller
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
+            'role' => $role,
             'token' => $token
         ], 201);
     }
+
+
+    // public function register(Request $request)
+    // {
+    //     // Validate input
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|string|email|unique:users,email',
+    //         'password' => 'required|string|min:2'
+    //     ]);
+
+    //     // Check validation
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
+
+    //     // Create user
+    //     $user = User::create([
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'password' => Hash::make($request->password)
+    //     ]);
+
+    //     // Generate token
+    //     $token = $user->createToken('auth_token')->plainTextToken;
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'User created successfully',
+    //         'user' => $user,
+    //         'token' => $token
+    //     ], 201);
+    // }
 
     public function update(Request $request, $id)
     {

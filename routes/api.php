@@ -1,28 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HelloController;
+use App\Http\Controllers\UserController;
 
 // Public routes
 Route::prefix('users')->group(function () {
-    Route::get('/hello', [HelloController::class, 'sayHello']);
-    Route::post('/register', [HelloController::class, 'register']);
-    Route::post('/login', [HelloController::class, 'login'])->name('login');
+    Route::get('/hello', [UserController::class, 'sayHello']);
+    Route::post('/register', [UserController::class, 'register']);
+    Route::post('/login', [UserController::class, 'login'])->name('login');
 
-    Route::post('/update', [HelloController::class, 'update']);
-    Route::post('/getbyemail', [HelloController::class, 'getUserByEmail']);
+    Route::post('/update', [UserController::class, 'update']);
+    Route::post('/getbyemail', [UserController::class, 'getUserByEmail']);
 });
 
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/', [HelloController::class, 'index']);
-    Route::get('/{id}', [HelloController::class, 'show']);
-    Route::put('/{id}', [HelloController::class, 'update']);
-    Route::delete('/{id}', [HelloController::class, 'destroy']);
-    Route::post('/logout', [HelloController::class, 'logout']);
-    Route::post('/protected', [HelloController::class, 'protected']);
+    Route::get('/', [UserController::class, 'index']);
+    Route::get('/{id}', [UserController::class, 'show']);
+    Route::put('/{id}', [UserController::class, 'update']);
+    Route::delete('/{id}', [UserController::class, 'destroy']);
+    Route::post('/logout', [UserController::class, 'logout']);
+    Route::post('/protected', [UserController::class, 'protected']);
 });
 
 Route::middleware('auth:sanctum')->prefix('users')->group(function () {
-    Route::get('/user', [HelloController::class, 'getUser']);  // GET request for authenticated user
+    Route::get('/user', [UserController::class, 'getUser']);  // GET request for authenticated user
 });
