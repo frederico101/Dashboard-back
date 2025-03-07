@@ -19,6 +19,49 @@ class HelloController extends Controller
         ]);
     }
 
+    public function verifyToken(Request $request)
+    {
+        $user = Auth::user(); // Get the authenticated user
+
+        if ($user) {
+            return response()->json([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role, // Make sure the role is included
+                'email_verified_at' => $user->email_verified_at,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ]);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    public function getUser(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+     public function getUserByEmail(Request $request)
+    {
+        $email = $request->input('email'); // Get email from query parameters
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $user
+        ], 200);
+    }
+
     public function logout(Request $request)
     {
         // Revoke the token that was used to authenticate the current request
@@ -85,7 +128,7 @@ class HelloController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed'
+            'password' => 'required|string|min:2'
         ]);
 
         // Check validation
